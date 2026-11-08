@@ -1,5 +1,5 @@
 variable "aws_region" {
-  description = "Region the stack is deployed to (the inference profile's source Region)."
+  description = "Region for Lambda, API Gateway and logs."
   type        = string
   default     = "us-east-1"
 }
