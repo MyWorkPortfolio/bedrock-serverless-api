@@ -39,6 +39,26 @@ inference_profile_id = "eu.amazon.nova-2-lite-v1:0"
 
 Check the model card in the Bedrock docs for the inference profile ID that matches your Region's geography.
 
+## Deploying in an AWS Organization account
+
+If `terraform apply` fails with *"explicit deny in a service control policy"*, your organization blocks that service or Region, and no IAM permission can override it. Member accounts can't read their SCPs, so `scripts/probe-account.sh` finds out by testing:
+
+```bash
+bash scripts/probe-account.sh                        # default Regions
+bash scripts/probe-account.sh eu-north-1 eu-west-1   # Regions you choose
+```
+
+For each Region it creates and immediately deletes a throwaway HTTP API and Lambda function (with and without tags), and makes one 5-token Bedrock call. Results look like this:
+
+```
+=== eu-north-1 ===
+Bedrock (Nova 2 Lite) ....... OK (eu profile)
+API Gateway, no tags ........ OK
+Lambda, no tags ............. BLOCKED by organization SCP
+```
+
+It costs a fraction of a cent, but each Bedrock call counts against your token quota. Use the results to set `aws_region` (where API Gateway and Lambda are allowed) and `bedrock_region` (where Bedrock calls work) in `terraform.tfvars`.
+
 ## Clean up
 
 ```bash
@@ -56,3 +76,4 @@ terraform destroy
 | `lambda.tf` | Function, packaging and log group |
 | `api.tf` | HTTP API, route, stage throttling and invoke permission |
 | `outputs.tf` | Endpoint URL and function name |
+| `scripts/probe-account.sh` | Tests which Regions and services an organization account allows |
