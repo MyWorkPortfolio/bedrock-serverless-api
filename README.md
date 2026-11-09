@@ -2,9 +2,11 @@
 
 An HTTPS endpoint that takes a prompt and returns a response from Amazon Nova 2 Lite on Amazon Bedrock. Built with API Gateway (HTTP API), AWS Lambda (Python 3.13) and Terraform, with a least-privilege IAM policy scoped to one inference profile.
 
-```
-Client → API Gateway (POST /chat) → Lambda → Bedrock Converse API → Nova 2 Lite
-```
+![Architecture: Client → HTTP API → Lambda → Bedrock inference profile → Nova 2 Lite, with CloudWatch Logs, a least-privilege IAM role and Terraform provisioning](docs/architecture.svg)
+
+The orange arrows show the request path. Lambda and API Gateway run in one Region and call Bedrock in another (see [Deploying in an AWS Organization account](#deploying-in-an-aws-organization-account) for why). The editable source is [`docs/architecture.drawio`](docs/architecture.drawio); open it at [app.diagrams.net](https://app.diagrams.net).
+
+📖 **Full write-up:** [Build a Serverless AI API on AWS with Bedrock, Lambda and Terraform](https://gideonige.hashnode.dev/serverless-ai-api-aws-bedrock-lambda-terraform)
 
 ## Prerequisites
 
@@ -77,3 +79,4 @@ terraform destroy
 | `api.tf` | HTTP API, route, stage throttling and invoke permission |
 | `outputs.tf` | Endpoint URL and function name |
 | `scripts/probe-account.sh` | Tests which Regions and services an organization account allows |
+| `docs/architecture.*` | Architecture diagram: editable draw.io source, animated SVG and GIF, static PNG |
